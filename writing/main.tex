@@ -26,6 +26,11 @@ function baz{T}(x::T)::T
     return x
 end
 
+function haz{T}(x::T,y::T)::T
+	return x
+end
+haz(3,"hello")
+
 function bar()
     println(foo(2) * "baz") # 2baz
     println(foo("2") + 2) # 4
@@ -44,7 +49,7 @@ v
 # th := [todo]
 
 # types
-# t ::= any | name | T
+# t ::= any | name{t, ...} | T | (t, ...)
 
 # function types are
 # tf ::= tf where T | t -> t
@@ -57,8 +62,9 @@ v
 #expressions
 # e ::= v (DeclVar)
 #     | fun(e) (Decl->E to DeclForallApp and Decl->App)
-#     | name() (Decl->E)
+#     | name{t,...}() (Decl->E)
 #     | e :: t (DeclAnno)
+#     | (e, ...) (NA)
 
 \inferrule*[]{
 	psi |- e => tv
@@ -73,5 +79,17 @@ v
 }{
 	psi |- e1 ; fb <= t
 }
+
+psi |- e1 => t1  ...  psi |- en => tn
+-------------------------------------
+ psi |- (e1,...,en) => (t1,...,tn)
+
+psi |- e1 <= t1  ...  psi |- en <= tn
+--------------------------------------
+psi |- (e1,...,en) <= (t1,...,tn)
+
+# no bound mods needed, triangle rule makes unsound in all cases
+# Bound (intro in covariant position) gets overwritten by invariant
+
 \end{verbatim}
 \end{document}
