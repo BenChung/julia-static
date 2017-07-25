@@ -6,5 +6,72 @@
             pgffor, makecell, amsmath, amssymb} % double brackets llbracket
 
 \begin{document}
-foo bar
+% todos
+% Ben
+%   Come up with a declarative specification for the type system 
+% Paley
+
+%   Read Dunfield & Krishnaswami?
+
+\begin{verbatim}
+function foo(x::Int)::String
+	return string(x)
+end
+
+function foo(x::String)::Int
+	return parse(Int, x)
+end
+
+function baz{T}(x::T)::T
+    return x
+end
+
+function bar()
+    println(foo(2) * "baz") # 2baz
+    println(foo("2") + 2) # 4
+    println(baz("2") * "baz") # hellobaz
+    println(baz(2) + 2) # error
+    foo("2") * "baz" # type error
+end
+
+v = 2 :: Int
+v
+
+# function table
+# ft ::= function func_name(arg_name) : tf = fb
+
+# type hierarchy
+# th := [todo]
+
+# types
+# t ::= any | name | T
+
+# function types are
+# tf ::= tf where T | t -> t
+
+# psi ::= x : t psi | T psi | empty
+
+# function bodies
+# fb ::= e ; fb | v = e ; fb | e
+
+#expressions
+# e ::= v (DeclVar)
+#     | fun(e) (Decl->E to DeclForallApp and Decl->App)
+#     | name() (Decl->E)
+#     | e :: t (DeclAnno)
+
+\inferrule*[]{
+	psi |- e => tv
+	psi,v:tv |- fb <= t
+}{
+	psi |- v = e ; fb <= t
+}
+
+\inferrule*[]{
+	psi |- e1 => t1
+	psi |- fb <= t
+}{
+	psi |- e1 ; fb <= t
+}
+\end{verbatim}
 \end{document}
