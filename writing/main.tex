@@ -6,12 +6,17 @@
             pgffor, makecell, amsmath, amssymb} % double brackets llbracket
 
 \begin{document}
+	
+\title{TBD}
+\maketitle	
+	
 % todos
 % Ben
 %   Come up with a declarative specification for the type system 
 % Paley
+%   Subtyping and WF for declarative system.
 
-%   Read Dunfield & Krishnaswami?
+\section*{Motivating example}
 
 \begin{verbatim}
 function foo(x::Int)::String
@@ -26,70 +31,96 @@ function baz{T}(x::T)::T
     return x
 end
 
-function haz{T}(x::T,y::T)::T
+function caz{T}(x::T)::T
+	return "hello"
+end
+
+function haz{T}(x::T, y::T)::T
 	return x
 end
-haz(3,"hello")
+
+function haz{T}(x::T, y::Array{T})::T
+	return x
+end
 
 function bar()
     println(foo(2) * "baz") # 2baz
     println(foo("2") + 2) # 4
     println(baz("2") * "baz") # hellobaz
     println(baz(2) + 2) # error
-    foo("2") * "baz" # type error
+    foo("2") * "baz" # error
+    haz(3, "hello") # error
+    caz("hi") # hello
+    caz(2) # error
 end
 
-v = 2 :: Int
-v
+\end{verbatim}
 
+
+\section*{Declarative type system}
+
+\begin{verbatim}
 # function table
-# ft ::= function func_name(arg_name) : tf = fb
+ ft ::= function func_name(arg_name) : tf = fb
 
-# type hierarchy
-# th := [todo]
+# type hierarchy - no cycles, no multiple inheritance. 
+# have to be a tree, and the leafs are concrete types.
+ th := [todo]
 
 # types
-# t ::= any | name{t, ...} | T | (t, ...)
+ t ::= any | name{t, ...} | T | (t, ...)
 
 # function types are
-# tf ::= tf where T | t -> t
+ tf ::= tf where T | t -> t
 
-# psi ::= x : t psi | T psi | empty
+# environment
+ psi ::= x : t psi | T psi | empty
 
 # function bodies
-# fb ::= e ; fb | v = e ; fb | e
+ fb ::= e ; fb | v = e ; fb | e 
+# are function bodies allowed to be empty? 
+# how do you write a function bodies with just v = 1?
 
 #expressions
-# e ::= v (DeclVar)
-#     | fun(e) (Decl->E to DeclForallApp and Decl->App)
-#     | name{t,...}() (Decl->E)
-#     | e :: t (DeclAnno)
-#     | (e, ...) (NA)
+ e ::= v (DeclVar)
+     | fun(e) (Decl->E to DeclForallApp and Decl->App)
+     | name{t,...}() (Decl->E)
+     | e :: t (DeclAnno)
+     | (e, ...) (below)
 
+# assignment typing
 \inferrule*[]{
-	psi |- e => tv
-	psi,v:tv |- fb <= t
+     psi |- e => tv
+     psi,v:tv |- fb <= t
 }{
-	psi |- v = e ; fb <= t
+     psi |- v = e ; fb <= t
 }
 
+# sequence typing
 \inferrule*[]{
-	psi |- e1 => t1
-	psi |- fb <= t
+     psi |- e1 => t1
+     psi |- fb <= t
 }{
-	psi |- e1 ; fb <= t
+     psi |- e1 ; fb <= t
 }
 
-psi |- e1 => t1  ...  psi |- en => tn
--------------------------------------
- psi |- (e1,...,en) => (t1,...,tn)
+# tuple typing
+     psi |- e1 => t1  ...  psi |- en => tn
+    -------------------------------------
+     psi |- (e1,...,en) => (t1,...,tn)
 
-psi |- e1 <= t1  ...  psi |- en <= tn
---------------------------------------
-psi |- (e1,...,en) <= (t1,...,tn)
+     psi |- e1 <= t1  ...  psi |- en <= tn
+    --------------------------------------
+     psi |- (e1,...,en) <= (t1,...,tn)
 
 # no bound mods needed, triangle rule makes unsound in all cases
 # Bound (intro in covariant position) gets overwritten by invariant
+
+# Subtyping 
+
+
+# Well-formedness
+
 
 \end{verbatim}
 \end{document}
