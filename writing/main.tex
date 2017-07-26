@@ -65,7 +65,7 @@ end
 
 # type hierarchy - no cycles, no multiple inheritance. 
 # have to be a tree, and the leafs are concrete types.
- th := [todo]
+ th := name <: t th | empty
 
 # types
  t ::= any | name{t, ...} | T | (t, ...)
@@ -78,8 +78,8 @@ end
 
 # function bodies
  fb ::= e ; fb | v = e ; fb | e 
-# are function bodies allowed to be empty? 
-# how do you write a function bodies with just v = 1?
+# are function bodies allowed to be empty? no, but we'll deal in impl
+# how do you write a function bodies with just v = 1? not possible, impl
 
 #expressions
  e ::= v (DeclVar)
@@ -87,6 +87,14 @@ end
      | name{t,...}() (Decl->E)
      | e :: t (DeclAnno)
      | (e, ...) (below)
+
+#subtyping
+
+#psi/E duality
+
+Francesco's paper
+TUPLE, APP_INV, APP_SUPER, L_LEFT, L_RIGHT, R_LEFT, R_RIGHT, 
+REFL, TOP
 
 # assignment typing
 \inferrule*[]{
@@ -113,6 +121,25 @@ end
     --------------------------------------
      psi |- (e1,...,en) <= (t1,...,tn)
 
+# cov metafunction
+
+# cov(any, T) = 0
+# cov(Tuple{t1,...,tn},T) = sum_i=1^n cov(ti, T)
+# cov(name{t1,...,tn},T) = 0
+# cov(T, T) = 1
+# cov(U, T) = 0 if U != T
+
+# forall types
+
+     cov(t,T) <= 1   th,psi |- t'  th,psi |- [t'/T]t • e =>> t''
+    -----------------------------------------------------------
+              th, psi |- t where T • e =>> t''
+
+       cov(t,T) > 1   th,psi |- t'  th |- t' concrete  
+               th,psi |- [t'/T]t • e =>> t''
+    -----------------------------------------------------
+              th,psi |- t where T • e =>> t''
+
 # no bound mods needed, triangle rule makes unsound in all cases
 # Bound (intro in covariant position) gets overwritten by invariant
 
@@ -131,20 +158,25 @@ end
    -----------------
      psi |- any \ok
 
-     psi |- t1 \ok ...
-   ----------------------------
-     psi |- name{t1, ...} \ok
+     name in th   psi |- t1 \ok ...
+   -----------------------------------
+     th, psi |- name{t1, ...} \ok
 
      psi |- t1 \ok ...
    ------------------------
      psi |- (t1, ...) \ok 
 
-     \forall t2 . (t1, t2) \in th | psi |- t2 \ok
+     \forall t . name1 <: t \in th | th, psi |- t \ok 
      ## checks for th - non cyclic, no multi hier.
    --------------------------------------------------
      psi |- th \ok 
 
 
+# algo
+
+# envs
+# gamma etc := x : t | T_hat | T_hat <: t (cov) | T_hat = t (inv) | T | mark_T 
+# omega := x : t | T_hat = t | T | mark_T
 
 \end{verbatim}
 \end{document}
