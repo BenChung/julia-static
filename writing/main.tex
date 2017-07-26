@@ -61,7 +61,7 @@ end
 
 \begin{verbatim}
 # function table
- ft ::= function func_name(arg_name) : tf = fb
+ ft ::= function func_name(arg_name) : tf = fb | \empty
 
 # type hierarchy - no cycles, no multiple inheritance. 
 # have to be a tree, and the leafs are concrete types.
@@ -116,10 +116,34 @@ end
 # no bound mods needed, triangle rule makes unsound in all cases
 # Bound (intro in covariant position) gets overwritten by invariant
 
-# Subtyping 
+# Subtyping - types & function types
 
 
-# Well-formedness
+
+# Well-formedness - types, function table (function types & function body),
+#                 - type hierarchy
+
+     T \in psi
+   ---------------
+     psi |- T \ok
+
+     
+   -----------------
+     psi |- any \ok
+
+     psi |- t1 \ok ...
+   ----------------------------
+     psi |- name{t1, ...} \ok
+
+     psi |- t1 \ok ...
+   ------------------------
+     psi |- (t1, ...) \ok 
+
+     \forall t2 . (t1, t2) \in th | psi |- t2 \ok
+     ## checks for th - non cyclic, no multi hier.
+   --------------------------------------------------
+     psi |- th \ok 
+
 
 
 \end{verbatim}
