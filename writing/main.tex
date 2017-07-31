@@ -20,11 +20,11 @@
 
 \begin{verbatim}
 function foo(x::Int)::String
-	return string(x)
+    return string(x)
 end
 
 function foo(x::String)::Int
-	return parse(Int, x)
+    return parse(Int, x)
 end
 
 function baz{T}(x::T)::T
@@ -32,15 +32,15 @@ function baz{T}(x::T)::T
 end
 
 function caz{T}(x::T)::T
-	return "hello"
+    return "hello"
 end
 
 function haz{T}(x::T, y::T)::T
-	return x
+    return x
 end
 
 function haz{T}(x::T, y::Array{T})::T
-	return x
+    return x
 end
 
 function bar()
@@ -57,7 +57,7 @@ end
 \end{verbatim}
 
 
-\section*{Declarative type system}
+\section*{Declarative system}
 
 \begin{verbatim}
 # function table
@@ -78,23 +78,13 @@ end
 
 # function bodies
  fb ::= e ; fb | v = e ; fb | e 
-# are function bodies allowed to be empty? no, but we'll deal in impl
-# how do you write a function bodies with just v = 1? not possible, impl
 
-#expressions
+# expressions
  e ::= v (DeclVar)
      | fun(e) (Decl->E to DeclForallApp and Decl->App)
      | name{t,...}() (Decl->E)
      | e :: t (DeclAnno)
      | (e, ...) (below)
-
-#subtyping
-
-#psi/E duality
-
-Francesco's paper
-TUPLE, APP_INV, APP_SUPER, L_LEFT, L_RIGHT, R_LEFT, R_RIGHT, 
-REFL, TOP
 
 # assignment typing
 \inferrule*[]{
@@ -123,11 +113,11 @@ REFL, TOP
 
 # cov metafunction
 
-# cov(any, T) = 0
-# cov(Tuple{t1,...,tn},T) = sum_i=1^n cov(ti, T)
-# cov(name{t1,...,tn},T) = 0
-# cov(T, T) = 1
-# cov(U, T) = 0 if U != T
+  cov(any, T) = 0
+  cov(Tuple{t1,...,tn},T) = sum_i=1^n cov(ti, T)
+  cov(name{t1,...,tn},T) = 0
+  cov(T, T) = 1
+  cov(U, T) = 0 if U != T
 
 # forall types
 
@@ -143,9 +133,12 @@ REFL, TOP
 # no bound mods needed, triangle rule makes unsound in all cases
 # Bound (intro in covariant position) gets overwritten by invariant
 
-# Subtyping - types & function types
+# Subtyping
 
-
+# psi/E duality
+# From Fancesco's paper
+TUPLE, APP_INV, APP_SUPER, L_LEFT, L_RIGHT, R_LEFT, R_RIGHT, 
+REFL, TOP
 
 # Well-formedness - types, function table (function types & function body),
 #                 - type hierarchy
@@ -171,12 +164,21 @@ REFL, TOP
    --------------------------------------------------
      psi |- th \ok 
 
+\end{verbatim}
 
-# algo
+\section*{Algorithmic system}
+
+\begin{verbatim}
+
+# The syntax will be the same as the declarative system.
 
 # envs
-# gamma etc := x : t | T_hat | T_hat <: t (cov) | T_hat = t (inv) | T | mark_T 
-# omega := x : t | T_hat = t | T | mark_T
+gamma := x : t | T_hat | T_hat <: t (cov) | T_hat = t (inv) | T | mark_T 
+omega := x : t | T_hat = t | T | mark_T
+
+# subtyping
+
+
 
 # we don't need: alpha app, 
 
